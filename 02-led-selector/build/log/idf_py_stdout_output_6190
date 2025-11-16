@@ -1,0 +1,19 @@
+Command: ninja all
+[1/10] Performing build step for 'bootloader'
+[1/1] cd /home/elandoni/code/esp32/esp32-projects/02-led-selector/build/bootloader && /home/elandoni/.espressif/python_env/idf6.1_py3.13_env/bin/python /home/elandoni/code/esp32/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/elandoni/code/esp32/esp32-projects/02-led-selector/build/bootloader/bootloader.bin
+Bootloader binary size 0x5320 bytes. 0x2ce0 bytes (35%) free.
+[2/10] No install step for 'bootloader'
+[3/10] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/02-led-selector.c.obj
+[4/10] Completed 'bootloader'
+[5/10] Linking C static library esp-idf/main/libmain.a
+[6/10] Generating esp-idf/esp_system/ld/sections.ld
+[7/10] Building C object CMakeFiles/02-led-selector.elf.dir/project_elf_src_esp32s3.c.obj
+[8/10] Linking CXX executable 02-led-selector.elf
+[9/10] Generating binary image from built executable
+esptool v5.1.0
+Creating ESP32S3 image...
+Merged 2 ELF sections.
+Successfully created ESP32S3 image.
+Generated /home/elandoni/code/esp32/esp32-projects/02-led-selector/build/02-led-selector.bin
+[10/10] cd /home/elandoni/code/esp32/esp32-projects/02-led-selector/build && /home/elandoni/.espressif/python_env/idf6.1_py3.13_env/bin/python /home/elandoni/code/esp32/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/elandoni/code/esp32/esp32-projects/02-led-selector/build/partition_table/partition-table.bin /home/elandoni/code/esp32/esp32-projects/02-led-selector/build/02-led-selector.bin
+02-led-selector.bin binary size 0x2cd60 bytes. Smallest app partition is 0x100000 bytes. 0xd32a0 bytes (82%) free.

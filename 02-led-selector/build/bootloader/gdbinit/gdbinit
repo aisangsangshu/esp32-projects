@@ -1,0 +1,2 @@
+source /home/elandoni/code/esp32/esp32-projects/02-led-selector/build/bootloader/gdbinit/symbols
+source /home/elandoni/code/esp32/esp32-projects/02-led-selector/build/bootloader/gdbinit/connect
