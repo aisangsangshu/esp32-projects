@@ -1,5 +1,7 @@
 # 01 - LED Blink (ESP32-S3, GPIO 4)
 
+![LED blink demo](docs/monitor.jpeg)
+
 Basic ESP32-S3 LED blink example using ESP-IDF and FreeRTOS.
 
 ## Summary
@@ -21,6 +23,8 @@ It is a minimal “Hello World” for ESP32-S3 + ESP-IDF.
 
 ## Wiring
 
+![Wiring - breadboard view](docs/wiring.jpeg)
+
 - `GPIO 4` → resistor → LED anode (long leg)
 - LED cathode (short leg / flat side) → GND
 
@@ -28,4 +32,14 @@ If the LED is very dim, you can use a smaller resistor (e.g. 100 Ω) to increase
 
 ![Wiring diagram](docs/wiring.jpg)
 
-## Build and flash (
+## Build and flash (ESP-IDF)
+
+. ~/esp/esp-idf/export.sh  
+cd ~/code/esp32-projects/01LEDBLINK  
+idf.py set-target esp32s3  
+idf.py build  
+idf.py -p /dev/ttyACM0 flash monitor
+
+## Demo video
+
+[Watch demo on YouTube](https://youtube.com/REPLACE_WITH_YOUR_LINK)
