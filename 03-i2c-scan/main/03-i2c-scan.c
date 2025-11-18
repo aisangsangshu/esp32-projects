@@ -20,9 +20,9 @@ static void i2c_master_init(void)
 		.scl_pullup_en = GPIO_PULLUP_ENABLE,
 		.master.clk_speed = I2C_FREQ_HZ,
 		.clk_flags = 0
-	}
+	};
 
-	esp_err-t err = i2c_param_config(I2C_PORT, &conf);
+	esp_err_t err = i2c_param_config(I2C_PORT, &conf);
 	if (err != ESP_OK){
 		printf("i2c_param_config failed: %s\n", esp_err_to_name(err));
 		return;
@@ -35,24 +35,24 @@ static void i2c_master_init(void)
 	}
 }
 
-static esp_err_t i2c_probe_address(unit8_t addr)
+static esp_err_t i2c_probe_address(uint8_t addr)
 {
-	i2_cmd_handle_t cmd = i2c_cmd_link_create();
+	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
 	if (cmd == NULL){
     return ESP_FAIL;
   }
 
   i2c_master_start(cmd);
 	i2c_master_write_byte(cmd, (addr<<1) | I2C_MASTER_WRITE, true);
-	i2c_masteer_stop(cmd);
+  i2c_master_stop(cmd);
 
 	esp_err_t err=i2c_master_cmd_begin(
 			I2C_PORT,
 			cmd,
-			pdMS_TO_TIKS(I2C_TIMEOUT_MS)
+			pdMS_TO_TICKS(I2C_TIMEOUT_MS)
 	);
 
-	i2c_cmd_link_delet(cmd);
+	i2c_cmd_link_delete(cmd);
 
 	return err;
 }
@@ -61,7 +61,7 @@ static void i2c_scan_bus(void)
 {
 	printf("Scanning I2C bus... \n");
 
-	for (unit8_t addr = 1; addr < 0x7F; addr++){
+	for (uint8_t addr = 1; addr < 0x7F; addr++){
     esp_err_t err = i2c_probe_address(addr);
     if (err == ESP_OK){
       printf("Found device at 0x%02X\n", addr);

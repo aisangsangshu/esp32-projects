@@ -6,22 +6,22 @@ cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
 # If CMAKE_DISABLE_SOURCE_CHANGES is set to true and the source directory is an
 # existing directory in our source tree, calling file(MAKE_DIRECTORY) on it
 # would cause a fatal error, even though it would be a no-op.
-if(NOT EXISTS "/home/elandoni/code/esp32/esp-idf/components/bootloader/subproject")
-  file(MAKE_DIRECTORY "/home/elandoni/code/esp32/esp-idf/components/bootloader/subproject")
+if(NOT EXISTS "/home/edulandoni/esp32/esp-idf/components/bootloader/subproject")
+  file(MAKE_DIRECTORY "/home/edulandoni/esp32/esp-idf/components/bootloader/subproject")
 endif()
 file(MAKE_DIRECTORY
-  "/home/elandoni/code/esp32/esp32-projects/03-i2c-scan/build/bootloader"
-  "/home/elandoni/code/esp32/esp32-projects/03-i2c-scan/build/bootloader-prefix"
-  "/home/elandoni/code/esp32/esp32-projects/03-i2c-scan/build/bootloader-prefix/tmp"
-  "/home/elandoni/code/esp32/esp32-projects/03-i2c-scan/build/bootloader-prefix/src/bootloader-stamp"
-  "/home/elandoni/code/esp32/esp32-projects/03-i2c-scan/build/bootloader-prefix/src"
-  "/home/elandoni/code/esp32/esp32-projects/03-i2c-scan/build/bootloader-prefix/src/bootloader-stamp"
+  "/home/edulandoni/code/esp32-projects/03-i2c-scan/build/bootloader"
+  "/home/edulandoni/code/esp32-projects/03-i2c-scan/build/bootloader-prefix"
+  "/home/edulandoni/code/esp32-projects/03-i2c-scan/build/bootloader-prefix/tmp"
+  "/home/edulandoni/code/esp32-projects/03-i2c-scan/build/bootloader-prefix/src/bootloader-stamp"
+  "/home/edulandoni/code/esp32-projects/03-i2c-scan/build/bootloader-prefix/src"
+  "/home/edulandoni/code/esp32-projects/03-i2c-scan/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/home/elandoni/code/esp32/esp32-projects/03-i2c-scan/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/home/edulandoni/code/esp32-projects/03-i2c-scan/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/home/elandoni/code/esp32/esp32-projects/03-i2c-scan/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/home/edulandoni/code/esp32-projects/03-i2c-scan/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
 endif()
