@@ -107,13 +107,13 @@ static esp_err_t i2c_write_reg(uint8_t dev_addr, uint8_t reg_addr, uint8_t value
 static esp_err_t i2c_read_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, size_t len)
 {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-    if (cmd == NUUL) {
+    if (cmd == NULL) {
       return ESP_FAIL;
   }
 
   i2c_master_start(cmd);
   i2c_master_write_byte(cmd, (dev_addr <<1) | I2C_MASTER_WRITE, true);
-  i2c_master_write_byte(cmd, reg_addr, true;);
+  i2c_master_write_byte(cmd, reg_addr, true);
 
   i2c_master_start(cmd);
   i2c_master_write_byte(cmd, (dev_addr << 1) | I2C_MASTER_READ, true);
@@ -132,31 +132,102 @@ static esp_err_t i2c_read_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t *dat
     pdMS_TO_TICKS(I2C_TIMEOUT_MS)
   );
 
-  i2c_cmd_link_delete(cdm);
+  i2c_cmd_link_delete(cmd);
 
   return err;
 
 }
 
+static esp_err_t mpu_init(void)
+{
+  esp_err_t err;
+  err = i2c_write_reg(MPU_ADDR, MPU_REG_PWR_MGMT_1, 0x00);
+  if (err != ESP_OK) {
+    printf("mpu_init: error al escribir PWR_MGMT_1: %s\n", esp_err_to_name(err));
+    return err;
+  }
+  err = i2c_write_reg(MPU_ADDR, MPU_REG_ACCEL_CONFIG, 0x00);
+  if (err != ESP_OK){
+    printf("mpu_init: error al escribir ACCEL_CONFIG: %s\n", esp_err_to_name(err));
+    return err;
+  }
+  err = i2c_write_reg(MPU_ADDR, MPU_REG_GYRO_CONFIG, 0x00);
+  if (err != ESP_OK){
+    printf("mpu_init: error al escribir GYRO_CONFIG: %s\n", esp_err_to_name(err));
+    return err;
+  }
+  printf("mpu_init: MPU configurado (+-2g, +-250 dps)\n");
+  return ESP_OK;
+}
 
+static esp_err_t mpu_read_raw(int16_t *ax, int16_t * ay, int16_t *az,
+                              int16_t *gx, int16_t *gy, int16_t *gz,
+                              int16_t *temp_raw)
+{
+  uint8_t buf[14];
+  esp_err_t err;
+  
+  err = i2c_read_bytes(MPU_ADDR, MPU_REG_ACCEL_XOUT_H, buf, sizeof(buf));
+  if (err != ESP_OK){
+  printf("mpu_read_raw: error al leer datos: %s\n", esp_err_to_name(err));
+  return err;
+  }
 
+  *ax = (int16_t)((buf[0] << 8) | buf[1]);
+  *ay = (int16_t)((buf[2] << 8) | buf[3]);
+  *az = (int16_t)((buf[4] << 8) | buf[5]);
 
+  *temp_raw = (int16_t)((buf[6] << 8) | buf[7]);
+
+  *ax = (int16_t)((buf[0] << 8) | buf[1]);
+  *ax = (int16_t)((buf[0] << 8) | buf[1]);
+  *ax = (int16_t)((buf[0] << 8) | buf[1]);
+
+  return ESP_OK;
+
+}
+
+static void mpu_print_data(void)
+{
+    int16_t ax, ay, az;
+    int16_t gx, gy, gz;
+    esp_err_t err;
+
+    err = mpu_read_raw(&ax, &ay, &az, &gx, &gy, &gz);
+    if (err != ESP_OK) {
+        return;
+    }
+
+    float ax_g = ax / MPU_ACCEL_SENS_2G;
+    float ay_g = ay / MPU_ACCEL_SENS_2G;
+    float az_g = az / MPU_ACCEL_SENS_2G;
+
+    float gx_dps = gx / MPU_GYRO_SENS_250DPS;
+    float gy_dps = gy / MPU_GYRO_SENS_250DPS;
+    float gz_dps = gz / MPU_GYRO_SENS_250DPS;
+
+    printf("MPU accel [g]:  ax=%.2f  ay=%.2f  az=%.2f | "
+           "gyro [deg/s]: gx=%.2f  gy=%.2f  gz=%.2f\n",
+           ax_g, ay_g, az_g,
+           gx_dps, gy_dps, gz_dps);
+}
 
 void app_main(void)
 {
   i2c_master_init();
   vTaskDelay(pdMS_TO_TICKS(100));
+
   i2c_scan_bus();
 
-  while(1){
-    vTaskDelay(pdMS_TO_TICKS(1000));
+  if (mpu_init() != ESP_OK){
+    printf("Error inicializando el MPU. No se leerán datos.\n");
+  }
+  
+  while (1){
+    mpu_print_data();
+    vTaskDelay(pdMS_TO_TICKS(500));
   }
 }
-
-
-
-
-
 
 
 
