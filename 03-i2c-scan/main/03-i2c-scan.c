@@ -16,8 +16,8 @@
 #define MPU_REG_GYRO_CONFIG 0x1B
 #define MPU_REG_ACCEL_XOUT_H 0x3B
 
-#define MPU_ACCEL_SENS_2g 16384.0f
-#define MPU_GURO_SENS_250_DPS 131.0f
+#define MPU_ACCEL_SENS_2G 16384.0f
+#define MPU_GYRO_SENS_250DPS 131.0f
 
 static void i2c_master_init(void)
 {
@@ -135,34 +135,57 @@ static esp_err_t i2c_read_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t *dat
   i2c_cmd_link_delete(cmd);
 
   return err;
-
 }
+
 
 static esp_err_t mpu_init(void)
 {
-  esp_err_t err;
-  err = i2c_write_reg(MPU_ADDR, MPU_REG_PWR_MGMT_1, 0x00);
-  if (err != ESP_OK) {
-    printf("mpu_init: error al escribir PWR_MGMT_1: %s\n", esp_err_to_name(err));
-    return err;
-  }
-  err = i2c_write_reg(MPU_ADDR, MPU_REG_ACCEL_CONFIG, 0x00);
-  if (err != ESP_OK){
-    printf("mpu_init: error al escribir ACCEL_CONFIG: %s\n", esp_err_to_name(err));
-    return err;
-  }
-  err = i2c_write_reg(MPU_ADDR, MPU_REG_GYRO_CONFIG, 0x00);
-  if (err != ESP_OK){
-    printf("mpu_init: error al escribir GYRO_CONFIG: %s\n", esp_err_to_name(err));
-    return err;
-  }
-  printf("mpu_init: MPU configurado (+-2g, +-250 dps)\n");
-  return ESP_OK;
+    esp_err_t err;
+
+    // Reset de dispositivo (setear bit 7 de PWR_MGMT_1)
+    err = i2c_write_reg(MPU_ADDR, MPU_REG_PWR_MGMT_1, 0x80);
+    if (err != ESP_OK) {
+        printf("mpu_init: error al hacer reset: %s\n", esp_err_to_name(err));
+        return err;
+    }
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    // Sacar de sleep, clock interno
+    err = i2c_write_reg(MPU_ADDR, MPU_REG_PWR_MGMT_1, 0x00);
+    if (err != ESP_OK) {
+        printf("mpu_init: error al escribir PWR_MGMT_1: %s\n", esp_err_to_name(err));
+        return err;
+    }
+
+    // Asegurar que no haya ejes deshabilitados en PWR_MGMT_2
+    err = i2c_write_reg(MPU_ADDR, 0x6C, 0x00); // PWR_MGMT_2
+    if (err != ESP_OK) {
+        printf("mpu_init: error al escribir PWR_MGMT_2: %s\n", esp_err_to_name(err));
+        return err;
+    }
+
+    // Acelerómetro ±2g
+    err = i2c_write_reg(MPU_ADDR, MPU_REG_ACCEL_CONFIG, 0x00);
+    if (err != ESP_OK) {
+        printf("mpu_init: error al escribir ACCEL_CONFIG: %s\n", esp_err_to_name(err));
+        return err;
+    }
+
+    // Giroscopio ±250 dps
+    err = i2c_write_reg(MPU_ADDR, MPU_REG_GYRO_CONFIG, 0x00);
+    if (err != ESP_OK) {
+        printf("mpu_init: error al escribir GYRO_CONFIG: %s\n", esp_err_to_name(err));
+        return err;
+    }
+
+    printf("mpu_init: MPU configurado (reset, +-2g, +-250 dps)\n");
+    return ESP_OK;
 }
 
+
 static esp_err_t mpu_read_raw(int16_t *ax, int16_t * ay, int16_t *az,
-                              int16_t *gx, int16_t *gy, int16_t *gz,
-                              int16_t *temp_raw)
+                              int16_t *temp_raw,
+                              int16_t *gx, int16_t *gy, int16_t *gz)
 {
   uint8_t buf[14];
   esp_err_t err;
@@ -190,10 +213,11 @@ static esp_err_t mpu_read_raw(int16_t *ax, int16_t * ay, int16_t *az,
 static void mpu_print_data(void)
 {
     int16_t ax, ay, az;
+    int16_t temp_raw;
     int16_t gx, gy, gz;
     esp_err_t err;
 
-    err = mpu_read_raw(&ax, &ay, &az, &gx, &gy, &gz);
+    err = mpu_read_raw(&ax, &ay, &az, &temp_raw, &gx, &gy, &gz);
     if (err != ESP_OK) {
         return;
     }
@@ -206,10 +230,16 @@ static void mpu_print_data(void)
     float gy_dps = gy / MPU_GYRO_SENS_250DPS;
     float gz_dps = gz / MPU_GYRO_SENS_250DPS;
 
+    float temp_c = (temp_raw / 340.0f) + 36.53f;
+    
+    printf("RAW gyro: gx=%d gy=%d gz=%d\n", gx,gy,gz);
+
     printf("MPU accel [g]:  ax=%.2f  ay=%.2f  az=%.2f | "
-           "gyro [deg/s]: gx=%.2f  gy=%.2f  gz=%.2f\n",
+           "gyro [deg/s]: gx=%.2f  gy=%.2f  gz=%.2f | "
+           "chip temp=%.2f C\n",
            ax_g, ay_g, az_g,
-           gx_dps, gy_dps, gz_dps);
+           gx_dps, gy_dps, gz_dps,
+           temp_c);
 }
 
 void app_main(void)
