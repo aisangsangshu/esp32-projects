@@ -1,2 +1,0 @@
-source /home/edulandoni/code/esp32-projects/03-i2c-scan/build/bootloader/gdbinit/symbols
-source /home/edulandoni/code/esp32-projects/03-i2c-scan/build/bootloader/gdbinit/connect

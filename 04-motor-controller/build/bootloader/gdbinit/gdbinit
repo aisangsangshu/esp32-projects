@@ -1,2 +1,0 @@
-source /home/edulandoni/code/esp32-projects/04-motor-controller/build/bootloader/gdbinit/symbols
-source /home/edulandoni/code/esp32-projects/04-motor-controller/build/bootloader/gdbinit/connect
