@@ -1,4 +1,4 @@
-
+//#include <inttypes.h>
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -22,7 +22,7 @@
 #define LEDC_TIMER          LEDC_TIMER_0
 #define LEDC_MODE           LEDC_LOW_SPEED_MODE
 #define LEDC_CHANNEL        LEDC_CHANNEL_0
-#define LEDC_DUTY_RES       LEDC_TIMER_16_BIT   // 16 bits -> 0..65535
+#define LEDC_DUTY_RES       LEDC_TIMER_14_BIT   // 16 bits -> 0..65535
 #define LEDC_FREQUENCY      50                 // 50 Hz (periodo 20 ms)
 
 // =====================
@@ -120,7 +120,7 @@ void app_main(void)
 
     while (1) {
         // 1) Leer potenciómetro (raw 0..4095 aprox)
-        int raw = 0;
+         int raw = 0;
         ESP_ERROR_CHECK(adc_oneshot_read(s_adc_handle, POT_ADC_CHANNEL, &raw));
 
         // 2) Mapear a 1000..2000 us
@@ -131,8 +131,8 @@ void app_main(void)
         esc_set_pulse(pulse);
 
         // 4) Log opcional
-        ESP_LOGI(TAG, "raw=%d  pulse=%u us", raw, pulse);
-
+        ESP_LOGI(TAG, "raw=%d  pulse=%u us", raw, (unsigned int)pulse);
+        ESP_LOGI(TAG, "raw=%d  pulse=%" PRIu32 " us", raw, (uint32_t)pulse);
         // 5) 20 ms de delay (~50 Hz de actualización)
         vTaskDelay(pdMS_TO_TICKS(20));
     }

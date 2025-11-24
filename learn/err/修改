@@ -1,0 +1,1 @@
+hierarchy@ubuntu:~/esp32proj/esp32-projects/04-motor-controller$ nano /home/hierarchy/esp-idf/components/esp_driver_ledc/CMakeLists.txt

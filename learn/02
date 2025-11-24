@@ -1,0 +1,9 @@
+hierarchy@ubuntu:~/esp32proj/esp32-projects/04-motor-controller$ idf.py build
+Executing action: all (aliases: build)
+Running cmake in directory /home/hierarchy/esp32proj/esp32-projects/04-motor-controller/build
+Executing "cmake -G Ninja -DPYTHON_DEPS_CHECKED=1 -DPYTHON=/home/hierarchy/.espressif/python_env/idf5.3_py3.10_env/bin/python -DESP_PLATFORM=1 -DCCACHE_ENABLE=0 /home/hierarchy/esp32proj/esp32-projects/04-motor-controller"...
+-- IDF_TARGET is not set, guessed 'esp32' from sdkconfig '/home/hierarchy/esp32proj/esp32-projects/04-motor-controller/sdkconfig'
+-- Found Git: /usr/bin/git (found version "2.34.1") 
+-- The C compiler identification is GNU 13.2.0
+-- The CXX compiler identification is GNU 13.2.0
+-- The ASM compiler identification is GNU
